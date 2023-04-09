@@ -10,15 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed;
 
     public float groundDrag;
-    
-    public float jumpForce;
-    public float jumpCooldown;
-    public float airMultiplier;
-    bool readyToJump;
-
-    [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
-
+        
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatisGround;
@@ -35,29 +27,37 @@ public class PlayerMovement : MonoBehaviour
 
     public MovementState state;
 
+    private Animator animator;
+
     public enum MovementState
     {
         freeze,
         walking,
         dashing,
-        air
+        jumping
     }
 
     public bool dashing;
+    public bool jumping;
     public bool freeze;
+    private bool dash;
+    private bool jump;
     
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        readyToJump = true;
+        dash = false;
+        animator = GetComponent<Animator>();
     } 
 
     private void Update()
     {
         // ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatisGround);
-        
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f , whatisGround);
+        animator.SetFloat("mSpeed", rb.velocity.magnitude);
+        animator.SetBool("Impulso", dash);
+        animator.SetBool("Pulo", jump);
         MyInput();
         SpeedControl();
         StateHandler();
@@ -79,15 +79,6 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        //quando pular
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
-        {
-            readyToJump = false;
-
-            Jump();
-
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
     }
 
     private void StateHandler()
@@ -98,18 +89,32 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.freeze;
             moveSpeed = 0;
             rb.velocity = Vector3.zero;
+            dash = false;
+            jump = false;
         }
         // mode - dashing
         else if(dashing)
         {
             state = MovementState.dashing;
             moveSpeed = dashSpeed;
+            dash = true;
+            jump = false;
+        }
+
+        else if(jumping)
+        {
+            state = MovementState.jumping;
+            moveSpeed = walkSpeed;
+            dash = false;
+            jump = true;
         }
 
         else 
         {
             state = MovementState.walking;
             moveSpeed = walkSpeed;
+            dash = false;
+            jump = false;
         }
     }
 
@@ -117,16 +122,9 @@ public class PlayerMovement : MonoBehaviour
     {
         //calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        // no chão
-        if (grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-
-        // no ar
-        if(!grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);    
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);       
     }
 
-// controle de velocidade
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -138,16 +136,4 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Jump()
-    {
-        // reset abd vekocity
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-    }
-
-    private void ResetJump()
-    {
-        readyToJump = true;
-    }   
 }

@@ -21,6 +21,11 @@ public class Dashing : MonoBehaviour
 
    [Header("Input")]
    public KeyCode dashKey = KeyCode.E;
+   public KeyCode jumpKey = KeyCode.Space;
+
+   [Header("Jump")]
+   public bool isOnGround = true;
+   public float jumpForce = 10f;
 
    private void Start()
    {
@@ -31,10 +36,20 @@ public class Dashing : MonoBehaviour
    private void Update()
    {
         if(Input.GetKeyDown(dashKey))
-            Dash();
-        
-        if (dashCdTimer > 0)
-            dashCdTimer -= Time.deltaTime;
+        {
+          Dash();
+        }
+        else if (dashCdTimer > 0)
+        {
+          dashCdTimer -= Time.deltaTime;
+        }
+        else if(Input.GetKeyDown(jumpKey) && isOnGround)
+        {
+          rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+          pm.jumping = true;
+          pm.dashing = false;
+          isOnGround = false;
+        }
    }
 
    private void Dash()
@@ -62,5 +77,14 @@ public class Dashing : MonoBehaviour
    private void ResetDash()
    {
         pm.dashing = false;
+   }
+   
+   private void OnCollisionEnter(Collision collision)
+   {
+     if(collision.gameObject.tag == "Ground")
+     {
+          isOnGround = true;
+          pm.jumping = false;
+     }
    }
 }
