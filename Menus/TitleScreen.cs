@@ -7,7 +7,7 @@ public class TitleScreen : MonoBehaviour
 {
     public void PlayGame ()
     {
-        SceneManager.LoadScene("SampleScene");     
+        SceneManager.LoadScene("testeanimação");     
     }
     
     public void QuitGame ()
