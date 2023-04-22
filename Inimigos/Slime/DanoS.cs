@@ -33,6 +33,19 @@ public class DanoS : MonoBehaviour
         switch(collision.gameObject.tag)
         {
             case "Espada":
+                print("espada colidiu");
+                break;
+            
+            
+
+        }
+   }
+   private void OnCollisionExit(Collision collision)
+   {
+        switch(collision.gameObject.tag)
+        {
+            case "Espada":
+                print("espada desapareceu");
                 Vector3 forceToApply = orientation.forward * impulsoE + orientation.up * impulsoUp;
                 rb.AddForce(forceToApply, ForceMode.Impulse);
                 slimeHP = slimeHP -1;
@@ -41,5 +54,5 @@ public class DanoS : MonoBehaviour
             
 
         }
-   }       
+   }           
 }

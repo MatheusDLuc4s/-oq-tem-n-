@@ -36,8 +36,8 @@ public class Colisão : MonoBehaviour
         {
             case "Slime":
                 Vector3 forceToApply = orientation.forward * impulsoI + orientation.up * impulsoCima;
-                rb.AddForce(forceToApply, ForceMode.Impulse);
-                playerHP = playerHP -10;
+                //rb.AddForce(forceToApply, ForceMode.Impulse);
+                //playerHP = playerHP -10;
                 break;
             
             
