@@ -10,6 +10,8 @@ public class DanoS : MonoBehaviour
     public float impulsoE;
     public float impulsoUp;
     public int slimeHP = 3;
+    public GameObject hit;
+    public float resetDelay = 10f;
     
 
     Rigidbody rb;
@@ -17,11 +19,12 @@ public class DanoS : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        hit.SetActive(false);
     }
 
     void Update()
     {
-       if(slimeHP == 0)
+       if(slimeHP < 1)
        {
             Destroy(gameObject);
        }
@@ -33,13 +36,17 @@ public class DanoS : MonoBehaviour
         switch(collision.gameObject.tag)
         {
             case "Espada":
-                Vector3 forceToApply = orientation.forward * impulsoE + orientation.up * impulsoUp;
-                rb.AddForce(forceToApply, ForceMode.Impulse);
+                hit.SetActive(true);
+                //Vector3 forceToApply = orientation.forward * impulsoE + orientation.up * impulsoUp;
+                //rb.AddForce(forceToApply, ForceMode.Impulse);
                 slimeHP = slimeHP -1;
-                break;
-            
-            
-
+                Invoke("resetHit", resetDelay);
+                break; 
         }
-   }       
+   }  
+
+   void resetHit()
+   {
+        hit.SetActive(false);
+   }    
 }

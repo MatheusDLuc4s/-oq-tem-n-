@@ -64,11 +64,4 @@ public class Slime : MonoBehaviour
    {
         agent.SetDestination(player.position);
    }
-
-    private void onDrawGizmosSelected()
-   {
-     Gizmos.color = Color.yellow;
-     Gizmos.DrawWireSphere(transform.position, sightRange);
-   }
-
 }
